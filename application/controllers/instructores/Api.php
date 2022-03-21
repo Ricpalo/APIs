@@ -52,11 +52,7 @@ class Api extends RestController {
                 "email" => $this->post('email')
             );
 
-            if ($this->post('id')) {
-                $respuesta = $this->DAO->insert_modificar_entidad('tb_instructores', $datos, $this->post('id'));
-            } else {
-                $respuesta = $this->DAO->insert_modificar_entidad('tb_instructores', $datos);
-            } 
+            $respuesta = $this->DAO->insert_modificar_entidad('tb_instructores', $datos);
 
             if ($respuesta['status'] == '1') {
                 $respuesta = array(
@@ -65,7 +61,45 @@ class Api extends RestController {
                     "datos" => array(),
                     "errores" => array()
                 );
-            } else if ($respuesta['status'] == '2') {
+            } else {
+                $respuesta = array(
+                    "status" => "0",
+                    "errores" => array(),
+                    "mensaje" => "Error al registrar",
+                    "datos" => array()
+                );
+            }
+
+        } else {
+            $respuesta = array(
+                "status" => "0",
+                "errores" => $this->form_validation->error_array(),
+                "mensaje" => "Error al procesar la información",
+                "datos" => array()
+            );
+        }
+
+        $this->response($respuesta, 200);
+    }
+
+    function instructores_put() {
+        $this->load->model('DAO');
+
+        $alumno = $this->DAO->seleccionar_entidad('tb_instructores', array('id' => $this->put('id')), TRUE);
+
+        $this->form_validation->set_data($this->put());
+        $this->form_validation->set_rules('nombre', 'Nombre', 'required');
+        $this->form_validation->set_rules('email', 'Email', 'required');
+
+        if ( $this->form_validation->run() ) {
+            $datos = array(
+                "nombre" => $this->put('nombre'),
+                "email" => $this->put('email')
+            );
+
+            $respuesta = $this->DAO->insert_modificar_entidad('tb_instructores', $datos, array('id' => $this->put('id')));
+
+            if ($respuesta['status'] == '1') {
                 $respuesta = array(
                     "status" => "1",
                     "mensaje" => "Actualizado Correcto",

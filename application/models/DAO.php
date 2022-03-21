@@ -7,8 +7,8 @@ class DAO extends CI_Model {
     // }
   
     function insert_modificar_entidad($entidad, $datos = array(), $filtro = null) {
-        if ($filtro != null) {
-            $this->db->where('id', $filtro);
+        if ($filtro) {
+            $this->db->where($filtro);
             $this->db->update($entidad, $datos);
         } else {
             $this->db->insert($entidad, $datos);
@@ -21,17 +21,11 @@ class DAO extends CI_Model {
                 "codigo" => $this->db->error()['code']
             );
         } else {
-            if($filtro != null) {
-                return array(
-                    "status" => "2",
-                    "mensaje" => "Informacion actualizada correctamente"
-                );
-            } else {
-                return array(
-                    "status" => "1",
-                    "mensaje" => "Informacion registrada correctamente"
-                );
-            }
+            return array(
+                "status" => "1",
+                "mensaje" => "Informacion registrada correctamente"
+            );
+
         }
     }
 

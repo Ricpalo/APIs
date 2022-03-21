@@ -56,11 +56,7 @@ class Api extends RestController {
                 "descripcion" => $this->post('descripcion')
             );
 
-            if ($this->post('id')) {
-                $respuesta = $this->DAO->insert_modificar_entidad('tb_cursos', $datos, $this->post('id'));
-            } else {
-                $respuesta = $this->DAO->insert_modificar_entidad('tb_cursos', $datos);
-            } 
+            $respuesta = $this->DAO->insert_modificar_entidad('tb_cursos', $datos);
 
             if ($respuesta['status'] == '1') {
                 $respuesta = array(
@@ -69,7 +65,49 @@ class Api extends RestController {
                     "datos" => array(),
                     "errores" => array()
                 );
-            } else if ($respuesta['status'] == '2') {
+            } else {
+                $respuesta = array(
+                    "status" => "0",
+                    "errores" => array(),
+                    "mensaje" => "Error al registrar",
+                    "datos" => array()
+                );
+            }
+
+        } else {
+            $respuesta = array(
+                "status" => "0",
+                "errores" => $this->form_validation->error_array(),
+                "mensaje" => "Error al procesar la información",
+                "datos" => array()
+            );
+        }
+
+        $this->response($respuesta, 200);
+    }
+
+    function cursos_put() {
+        $this->load->model('DAO');
+
+        $alumno = $this->DAO->seleccionar_entidad('tb_cursos', array('id' => $this->put('id')), TRUE);
+
+        $this->form_validation->set_data($this->put());
+        $this->form_validation->set_rules('titulo', 'Titulo', 'required');
+        $this->form_validation->set_rules('duracion', 'Duracion', 'required');
+        $this->form_validation->set_rules('precio', 'Precio', 'required');
+        $this->form_validation->set_rules('descripcion', 'Descripcion', 'required');
+
+        if ( $this->form_validation->run() ) {
+            $datos = array(
+                "titulo" => $this->put('titulo'),
+                "duracion" => $this->put('duracion'),
+                "precio" => $this->put('precio'),
+                "descripcion" => $this->put('descripcion')
+            );
+
+            $respuesta = $this->DAO->insert_modificar_entidad('tb_cursos', $datos, array('id' => $this->put('id')));
+
+            if ($respuesta['status'] == '1') {
                 $respuesta = array(
                     "status" => "1",
                     "mensaje" => "Actualizado Correcto",

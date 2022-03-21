@@ -58,11 +58,7 @@ class Api extends RestController {
                 "id_ubicacion" => $this->post('id_ubicacion')
             );
 
-            if ($this->post('id')) {
-                $respuesta = $this->DAO->insert_modificar_entidad('tb_eventos_cursos', $datos, $this->post('id'));
-            } else {
-                $respuesta = $this->DAO->insert_modificar_entidad('tb_eventos_cursos', $datos);
-            } 
+            $respuesta = $this->DAO->insert_modificar_entidad('tb_eventos_cursos', $datos);
 
             if ($respuesta['status'] == '1') {
                 $respuesta = array(
@@ -71,7 +67,51 @@ class Api extends RestController {
                     "datos" => array(),
                     "errores" => array()
                 );
-            } else if ($respuesta['status'] == '2') {
+            } else {
+                $respuesta = array(
+                    "status" => "0",
+                    "errores" => array(),
+                    "mensaje" => "Error al registrar",
+                    "datos" => array()
+                );
+            }
+
+        } else {
+            $respuesta = array(
+                "status" => "0",
+                "errores" => $this->form_validation->error_array(),
+                "mensaje" => "Error al procesar la información",
+                "datos" => array()
+            );
+        }
+
+        $this->response($respuesta, 200);
+    }
+
+    function eventos_put() {
+        $this->load->model('DAO');
+
+        $alumno = $this->DAO->seleccionar_entidad('tb_eventos_cursos', array('id' => $this->put('id')), TRUE);
+
+        $this->form_validation->set_data($this->put());
+        $this->form_validation->set_rules('fecha_inicio', 'Fecha de Inicio', 'required');
+        $this->form_validation->set_rules('fecha_fin', 'Fecha de Fin', 'required');
+        $this->form_validation->set_rules('id_instructor', 'Instructor', 'required');
+        $this->form_validation->set_rules('id_curso', 'Curso', 'required');
+        $this->form_validation->set_rules('id_ubicacion', 'Ubicacion', 'required');
+
+        if ( $this->form_validation->run() ) {
+            $datos = array(
+                "fecha_inicio" => $this->put('fecha_inicio'),
+                "fecha_fin" => $this->put('fecha_fin'),
+                "id_instructor" => $this->put('id_instructor'),
+                "id_curso" => $this->put('id_curso'),
+                "id_ubicacion" => $this->put('id_ubicacion')
+            );
+
+            $respuesta = $this->DAO->insert_modificar_entidad('tb_eventos_cursos', $datos, array('id' => $this->put('id')));
+
+            if ($respuesta['status'] == '1') {
                 $respuesta = array(
                     "status" => "1",
                     "mensaje" => "Actualizado Correcto",
