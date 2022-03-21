@@ -85,8 +85,6 @@ class Api extends RestController {
     function ubicaciones_put() {
         $this->load->model('DAO');
 
-        $alumno = $this->DAO->seleccionar_entidad('tb_ubicaciones', array('id' => $this->put('id')), TRUE);
-
         $this->form_validation->set_data($this->put());
         $this->form_validation->set_rules('nombre', 'Nombre', 'required');
         $this->form_validation->set_rules('direccion', 'Direccion', 'required');

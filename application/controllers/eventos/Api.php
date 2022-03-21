@@ -91,8 +91,6 @@ class Api extends RestController {
     function eventos_put() {
         $this->load->model('DAO');
 
-        $alumno = $this->DAO->seleccionar_entidad('tb_eventos_cursos', array('id' => $this->put('id')), TRUE);
-
         $this->form_validation->set_data($this->put());
         $this->form_validation->set_rules('fecha_inicio', 'Fecha de Inicio', 'required');
         $this->form_validation->set_rules('fecha_fin', 'Fecha de Fin', 'required');
